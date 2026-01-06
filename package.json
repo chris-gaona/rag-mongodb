@@ -1,0 +1,24 @@
+{
+  "name": "rag-mongodb",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@langchain/community": "^1.1.1",
+    "@langchain/core": "^1.1.4",
+    "@langchain/textsplitters": "^1.0.1",
+    "js-tiktoken": "^1.0.21",
+    "langchain": "^1.1.5",
+    "mongodb": "^7.0.0",
+    "openai": "^4.104.0",
+    "pdf-parse": "^1.1.1",
+    "voyageai": "^0.1.0"
+  }
+}
