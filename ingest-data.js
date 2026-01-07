@@ -2,10 +2,9 @@ import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters'
 import { MongoClient } from 'mongodb';
 import { getEmbedding } from './get-embeddings.js';
-import * as fs from 'fs';
 import { getEncoding } from 'js-tiktoken';
 
-
+const PDF_FILE = `DAFMAN_13-217.pdf`
 // Specify the chunking params
 const CHUNK_SIZE = 250;
 const CHUNK_OVERLAP = 50;
@@ -26,14 +25,7 @@ async function run() {
     const client = new MongoClient(process.env.MONGODB_URI);
 
     try {
-        // // Save online PDF as a file
-        // const rawData = await fetch("https://investors.mongodb.com/node/12236/pdf");
-        // const pdfBuffer = await rawData.arrayBuffer();
-        // const pdfData = Buffer.from(pdfBuffer);
-        // fs.writeFileSync("investor-report.pdf", pdfData);
-
-        // const loader = new PDFLoader(`investor-report.pdf`);
-        const loader = new PDFLoader(`DAFMAN_13-217.pdf`);
+        const loader = new PDFLoader(PDF_FILE);
         const data = await loader.load();
 
         // Chunk the text from the PDF
@@ -48,10 +40,14 @@ async function run() {
         const docs = await textSplitter.splitDocuments(data);
         console.log(`Successfully chunked the PDF into ${docs.length} documents.`);
 
-        // Connect to your MongoDB cluster
+        // Connect to your MongoDB Atlas cluster
         await client.connect();
         const db = client.db("rag_db");
         const collection = db.collection("test");
+
+        console.log("Clearing your collection of any pre-existing data.");
+        const deleteResult = await collection.deleteMany({})
+        console.log("Deleted " + deleteResult.deletedCount + " documents")
 
         console.log("Generating embeddings and inserting documents...");
         const insertDocuments = [];
