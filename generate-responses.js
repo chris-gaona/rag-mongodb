@@ -1,11 +1,25 @@
 import { getQueryResults } from './retrieve-documents.js';
 import OpenAI from 'openai';
 
+// Specify the question ask
+const QUESTION = "What are the surface wind limits for CDS / Equipment airdops from a C-130 aircraft, and how do these limits adjust for high-velocity drops?";
+
+// Specify the search query parameters
+/**
+ * It is recommended that you specify a numCandidates number at least 20 times higher than the number of documents to return (limit) to increase accuracy and reduce discrepancies
+ */
+const NUM_CANDIDATES = 100; // 100 is 20 times higher than LIMIT of 5
+const EXACT = false; // Indicates whether to run ENN (true) or ANN (false) search - If true, numCandidates should be omitted
+const LIMIT = 5;
+
 async function run() {
     try {
         // Specify search query and retrieve relevant documents
-        const question = "Who has approval authority for HLZ surveys in a JSOAC or JSOTF context?";
-        const documents = await getQueryResults(question);
+        const question = QUESTION; // QUESTION
+        const documents = await getQueryResults(question, NUM_CANDIDATES, EXACT, LIMIT);
+
+        // Uncomment below line to print out retrieved documents
+        // console.log('Retrieved documents: ', documents);
 
         // Build a string representation of the retrieved documents to use in the prompt
         let textDocuments = "";
