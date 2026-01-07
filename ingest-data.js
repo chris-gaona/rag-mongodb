@@ -14,7 +14,12 @@ const CHUNK_OVERLAP = 50;
 const encoding = getEncoding('gpt2');
 
 export const getTokenCount = (text) => {
-  return encoding.encode(text).length;
+    // Standard character splitting (roughly 4 chars per token) is 
+    // often inaccurate for non-English text or code.
+    // Using tiktoken provides a more accurate token count.
+    // This recursive method is generally recommended for better 
+    // context preservation
+    return encoding.encode(text).length;
 };
 
 async function run() {
@@ -32,6 +37,9 @@ async function run() {
         const data = await loader.load();
 
         // Chunk the text from the PDF
+        // By default, RecursiveCharacterTextSplitter uses 
+        // ["\\n\\n", "\\n", " ", ""] (paragraphs, then newlines, 
+        // then spaces, then characters). 
         const textSplitter = new RecursiveCharacterTextSplitter({
             chunkSize: CHUNK_SIZE,
             chunkOverlap: CHUNK_OVERLAP,
