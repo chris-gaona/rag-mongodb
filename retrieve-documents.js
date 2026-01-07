@@ -19,6 +19,8 @@ export async function getQueryResults(query, numCandidates, exact, limit) {
          * ENN or exact search is ideal for smaller datasets or when filtering is applied to reduce the dataset size
          */
 
+        // $vectorSearch must be the first stage of any pipeline 
+        // where it appears.
         const pipeline = [
             {
                 $vectorSearch: {
