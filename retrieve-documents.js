@@ -29,7 +29,8 @@ export async function getQueryResults(query, numCandidates, exact, limit) {
                     path: "embedding",
                     numCandidates, // numCandidates is required if exact is false or omitted
                     exact, // Flag that specifies whether to run ENN or ANN search
-                    limit
+                    limit,
+                    filter: { "source": { $eq: "DAFMAN_13-217.pdf" } } // Could use this to switch between different source documents
                 }
             },
             {

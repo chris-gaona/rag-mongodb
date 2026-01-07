@@ -19,7 +19,12 @@ async function run() {
                 "path": "embedding",
                 "similarity": "cosine",
                 "numDimensions": 1024
-              }
+              },
+              // Example of adding a custom pre-filter field to the index
+              {
+                "type": "filter",
+                "path": "source"
+              },
             ]
           }
       }

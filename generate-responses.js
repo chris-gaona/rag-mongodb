@@ -15,8 +15,7 @@ const LIMIT = 5;
 async function run() {
     try {
         // Specify search query and retrieve relevant documents
-        const question = QUESTION; // QUESTION
-        const documents = await getQueryResults(question, NUM_CANDIDATES, EXACT, LIMIT);
+        const documents = await getQueryResults(QUESTION, NUM_CANDIDATES, EXACT, LIMIT);
 
         // Uncomment below line to print out retrieved documents
         // console.log('Retrieved documents: ', documents);
@@ -29,7 +28,7 @@ async function run() {
 
         // Create a prompt consisting of the question and context to pass to the LLM
         const prompt = `Answer the following question based on the given context. If the user doesn't ask something answerable with provided context, let the user know we can answer questions about the DAFMAN document only. If you don't know the answer, just say that you don't know, don't try to make up an answer. Acknowledge limitations when the context provided is incomplete or does not contain relevant information to answer the question. If you need to fill knowledge gaps using information outside of the context, clearly attribute it as such. Make sure to provide the location (section/chapter) of the document where the answer can be found.
-            Question: {${question}}
+            Question: {${QUESTION}}
             Context: {${textDocuments}}
         `;
 

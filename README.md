@@ -74,4 +74,4 @@ node --env-file=.env generate-responses.js
 
 #### d. Repeat step 3 if you want to change the data or data settings for the chatbot to answer from
 
-#### e. Uncomment line 22 to display the documents retrieved from running vector search
+#### e. Uncomment line 21 to display the documents retrieved from running vector search
