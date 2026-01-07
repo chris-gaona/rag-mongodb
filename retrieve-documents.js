@@ -35,7 +35,7 @@ export async function getQueryResults(query, numCandidates, exact, limit) {
             {
                 $project: {
                     _id: 0,
-                    document: 1,
+                    text: 1,
                 }
             }
         ];

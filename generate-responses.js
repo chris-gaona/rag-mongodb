@@ -24,7 +24,7 @@ async function run() {
         // Build a string representation of the retrieved documents to use in the prompt
         let textDocuments = "";
         documents.forEach(doc => {
-            textDocuments += doc.document.pageContent;
+            textDocuments += doc.text;
         });
 
         // Create a prompt consisting of the question and context to pass to the LLM

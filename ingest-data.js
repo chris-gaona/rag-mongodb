@@ -37,8 +37,8 @@ async function run() {
             chunkOverlap: CHUNK_OVERLAP,
             lengthFunction: getTokenCount,
         });
-        const docs = await textSplitter.splitDocuments(data);
-        console.log(`Successfully chunked the PDF into ${docs.length} documents.`);
+        const splitDocs = await textSplitter.splitDocuments(data);
+        console.log(`Successfully chunked the PDF into ${splitDocs.length} documents.`);
 
         // Connect to your MongoDB Atlas cluster
         await client.connect();
@@ -51,14 +51,18 @@ async function run() {
 
         console.log("Generating embeddings and inserting documents...");
         const insertDocuments = [];
-        await Promise.all(docs.map(async doc => {
-
+        await Promise.all(splitDocs.map(async doc => {            
             // Generate embeddings using the function that you defined
             const embedding = await getEmbedding(doc.pageContent);
-
+            
             // Add the document with the embedding to array of documents for bulk insert
             insertDocuments.push({
-                document: doc,
+                // Customize the metadata for each chunked document
+                text: doc.pageContent,
+                source: doc.metadata.source,
+                pageNumber: doc.metadata.loc.pageNumber,
+                lines: doc.metadata.loc.lines,
+                totalPages: doc.metadata.pdf.totalPages,
                 embedding: embedding
             });
         }))

@@ -57,7 +57,7 @@ node --env-file=.env ingest-data.js
 Run the following command to create the vector index in Atlas.
 
 ```shell
-node --env-file=.env rag-vector-index.js
+node --env-file=.env build-vector-index.js
 ```
 
 ### 5. Ask a question, retrieve vector search results, and get a response from the chatbot
