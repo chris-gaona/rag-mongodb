@@ -15,8 +15,10 @@ export async function getQueryResults(query, numCandidates, exact, limit) {
         const collection = db.collection("test");
 
         /**
-         * ANN search is ideal for querying large datasets without significant filtering
+         * ANN search is ideal for querying large datasets without significant filtering (we'll use this one)
+         * https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/?interface=driver&language=nodejs#ann-search
          * ENN or exact search is ideal for smaller datasets or when filtering is applied to reduce the dataset size
+         * https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/?interface=driver&language=nodejs#enn-search
          */
 
         // $vectorSearch must be the first stage of any pipeline 
@@ -38,6 +40,7 @@ export async function getQueryResults(query, numCandidates, exact, limit) {
                 $project: {
                     _id: 0,
                     text: 1,
+                    // Use vectorSearchScore as a score $meta expression only after the $vectorSearch pipeline stage
                     score: { $meta: "vectorSearchScore" }
                 }
             }
