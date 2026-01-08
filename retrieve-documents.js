@@ -37,6 +37,7 @@ export async function getQueryResults(query, numCandidates, exact, limit) {
                 $project: {
                     _id: 0,
                     text: 1,
+                    score: { $meta: "vectorSearchScore" }
                 }
             }
         ];
