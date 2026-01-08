@@ -30,6 +30,7 @@ export async function getQueryResults(query, numCandidates, exact, limit) {
                     numCandidates, // numCandidates is required if exact is false or omitted
                     exact, // Flag that specifies whether to run ENN or ANN search
                     limit,
+                    // https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/?interface=driver&language=nodejs#mongodb-vector-search-pre-filtering
                     filter: { "source": { $eq: "DAFMAN_13-217.pdf" } } // Could use this to switch between different source documents
                 }
             },
