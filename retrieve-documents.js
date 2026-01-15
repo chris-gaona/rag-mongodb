@@ -15,7 +15,8 @@ export async function getQueryResults(query, numCandidates, exact, limit) {
         const collection = db.collection("test");
 
         /**
-         * ANN search is ideal for querying large datasets without significant filtering (we'll use this one)
+         * ANN - Approximate Nearest Neighbor (ANN) search, which specifies the total number of neighbors considered during the search.
+         * This search is ideal for querying large datasets without significant filtering (we'll use this one)
          * https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/?interface=driver&language=nodejs#ann-search
          * ENN or exact search is ideal for smaller datasets or when filtering is applied to reduce the dataset size
          * https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/?interface=driver&language=nodejs#enn-search
@@ -33,6 +34,7 @@ export async function getQueryResults(query, numCandidates, exact, limit) {
                     exact, // Flag that specifies whether to run ENN or ANN search
                     limit,
                     // https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/?interface=driver&language=nodejs#mongodb-vector-search-pre-filtering
+                    // The pre-filter MQL match expression
                     filter: { "source": { $eq: "DAFMAN_13-217.pdf" } } // Could use this to switch between different source documents
                 }
             },
