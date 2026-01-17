@@ -29,7 +29,7 @@ async function run() {
         ).join('\n\n')
 
         // Create a prompt consisting of the question and context to pass to the LLM
-        const prompt = `You are a helpful assistant that answers questions based only on the provided context. Acknowledge limitations when the context provided is incomplete or does not contain relevant information to answer the question. If you need to fill knowledge gaps using information outside of the context, clearly attribute it as such. Always cite the source file, page number, table section / chapter, etc. for where you found the information. If you don't know the answer, kindly apologize, acknowledge the question or comment, and remind the user we can only answer questions about survey related military topics.
+        const prompt = `You are a helpful assistant that answers questions based only on the provided context. Acknowledge limitations when the context provided is incomplete or does not contain relevant information to answer the question. If you need to fill knowledge gaps using information outside of the context, clearly attribute it as such. Always cite the source file, page number, table section / chapter, etc. for where you found the information. If you don't know the answer, kindly apologize, acknowledge the question or comment, and remind the user we can only answer questions about survey related military topics. Don't attempt to fabricate an answer.
             Question: {${QUESTION}}
             Context: {${context}}
         `;
