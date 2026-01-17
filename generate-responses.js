@@ -2,7 +2,10 @@ import { getQueryResults } from './retrieve-documents.js';
 import OpenAI from 'openai';
 
 // Specify the question ask
-const QUESTION = "What are the surface wind limits for CDS / Equipment airdops from a C-130 aircraft, and how do these limits adjust for high-velocity drops?";
+// const QUESTION = "What are the surface wind limits for CDS / Equipment airdops from a C-130 aircraft, and how do these limits adjust for high-velocity drops?";
+// const QUESTION = "What is the purpose of the MAJCOM Civil Engineering Divisions in regards to executing SFO?";
+// const QUESTION = "What are the standard geometric size criteria and minimums for Drop Zone operations, such as for C-130 CDS airdrops up to 600 feet AGL?";
+const QUESTION = "What do I need to know as a FARP surveyor?";
 
 // Specify the search query parameters
 /**
@@ -21,15 +24,14 @@ async function run() {
         // console.log('Retrieved documents: ', documents);
 
         // Build a string representation of the retrieved documents to use in the prompt
-        let textDocuments = "";
-        documents.forEach(doc => {
-            textDocuments += doc.text;
-        });
+        const context = documents.map(doc =>
+            `Content from ${doc.source} (page ${doc.pageNumber}):\n${doc.text}`
+        ).join('\n\n')
 
         // Create a prompt consisting of the question and context to pass to the LLM
-        const prompt = `Answer the following question based on the given context. If the user doesn't ask something answerable with provided context, let the user know we can answer questions about the DAFMAN document only. If you don't know the answer, just say that you don't know, don't try to make up an answer. Acknowledge limitations when the context provided is incomplete or does not contain relevant information to answer the question. If you need to fill knowledge gaps using information outside of the context, clearly attribute it as such. Make sure to provide the location (section/chapter) of the document where the answer can be found.
+        const prompt = `You are a helpful assistant that answers questions based only on the provided context. Acknowledge limitations when the context provided is incomplete or does not contain relevant information to answer the question. If you need to fill knowledge gaps using information outside of the context, clearly attribute it as such. Always cite the source file, page number, table section / chapter, etc. for where you found the information. If you don't know the answer, kindly apologize, acknowledge the question or comment, and remind the user we can only answer questions about survey related military topics.
             Question: {${QUESTION}}
-            Context: {${textDocuments}}
+            Context: {${context}}
         `;
 
         // Initialize OpenAI client

@@ -3,8 +3,8 @@ import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters'
 import { MongoClient } from 'mongodb';
 import { getEmbedding } from './get-embeddings.js';
 import { getEncoding } from 'js-tiktoken';
+import fs from 'fs';
 
-const PDF_FILE = `DAFMAN_13-217.pdf`
 // Specify the chunking params
 const CHUNK_SIZE = 250;
 const CHUNK_OVERLAP = 50;
@@ -25,21 +25,6 @@ async function run() {
     const client = new MongoClient(process.env.MONGODB_URI);
 
     try {
-        const loader = new PDFLoader(PDF_FILE);
-        const data = await loader.load();
-
-        // Chunk the text from the PDF
-        // By default, RecursiveCharacterTextSplitter uses 
-        // ["\\n\\n", "\\n", " ", ""] (paragraphs, then newlines, 
-        // then spaces, then characters). 
-        const textSplitter = new RecursiveCharacterTextSplitter({
-            chunkSize: CHUNK_SIZE,
-            chunkOverlap: CHUNK_OVERLAP,
-            lengthFunction: getTokenCount,
-        });
-        const splitDocs = await textSplitter.splitDocuments(data);
-        console.log(`Successfully chunked the PDF into ${splitDocs.length} documents.`);
-
         // Connect to your MongoDB Atlas cluster
         await client.connect();
         const db = client.db("rag_db");
@@ -49,31 +34,50 @@ async function run() {
         const deleteResult = await collection.deleteMany({})
         console.log("Deleted " + deleteResult.deletedCount + " documents")
 
-        console.log("Generating embeddings and inserting documents...");
-        const insertDocuments = [];
-        await Promise.all(splitDocs.map(async doc => {            
-            // Generate embeddings using the function that you defined
-            const embedding = await getEmbedding(doc.pageContent);
-            
-            // Add the document with the embedding to array of documents for bulk insert
-            insertDocuments.push({
-                // Customize the metadata for each chunked document
-                text: doc.pageContent,
-                source: doc.metadata.source,
-                pageNumber: doc.metadata.loc.pageNumber,
-                lines: doc.metadata.loc.lines,
-                totalPages: doc.metadata.pdf.totalPages,
-                embedding: embedding
+        const files = fs.readdirSync('./files').filter(f => f.endsWith('.pdf'));
+        const documents = [];
+
+        for (const file of files) {
+            console.log(`file`, file)
+            const loader = new PDFLoader(`./files/${file}`);
+            const data = await loader.load();
+    
+            // Chunk the text from the PDF
+            // By default, RecursiveCharacterTextSplitter uses 
+            // ["\\n\\n", "\\n", " ", ""] (paragraphs, then newlines, 
+            // then spaces, then characters). 
+            const textSplitter = new RecursiveCharacterTextSplitter({
+                chunkSize: CHUNK_SIZE,
+                chunkOverlap: CHUNK_OVERLAP,
+                lengthFunction: getTokenCount,
             });
-        }))
+            const splitDocs = await textSplitter.splitDocuments(data);
+            console.log(`Successfully chunked the PDF into ${splitDocs.length} documents.`);
+    
+            console.log("Generating embeddings and inserting documents...");
+            await Promise.all(splitDocs.map(async doc => {            
+                // Generate embeddings using the function that you defined
+                const embedding = await getEmbedding(doc.pageContent);
+                
+                // Add the document with the embedding to array of documents for bulk insert
+                documents.push({
+                    // Customize the metadata for each chunked document
+                    text: doc.pageContent,
+                    source: doc.metadata.source.replace('./files/', '').replace('.pdf', ''),
+                    pageNumber: doc.metadata.loc.pageNumber,
+                    lines: doc.metadata.loc.lines,
+                    totalPages: doc.metadata.pdf.totalPages,
+                    embedding: embedding
+                });
+            }))    
+        }
 
         // Continue processing documents if an error occurs during an operation
         const options = { ordered: false };
 
         // Insert documents with embeddings into collection
-        const result = await collection.insertMany(insertDocuments, options);  
+        const result = await collection.insertMany(documents, options);  
         console.log("Count of documents inserted: " + result.insertedCount); 
-
     } catch (err) {
         console.log(err.stack);
     }
