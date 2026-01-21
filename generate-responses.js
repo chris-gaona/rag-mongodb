@@ -44,7 +44,7 @@ async function run() {
 
         // Prompt the LLM to generate a response based on the context
         const chatCompletion = await client.chat.completions.create({
-            model: "gpt-4o",
+            model: "gpt-4o-mini",
             messages: [
                 {
                     role: "user",
